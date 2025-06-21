@@ -196,8 +196,9 @@
         }
 
         .bg-color-option {
-            width: 100%;
-            height: 25px;
+            width: 100px;
+            margin:auto;
+            height: 35px;
             border: 1px solid #ddd;
             border-radius: 4px;
             cursor: pointer;
@@ -307,7 +308,7 @@
                     <option value="fbc">FBC</option>
                 </select>
             </div>
-            
+
             <div class="control-group" id="topMarkColorGroup" style="display: block;">
                 <h3>Top Mark Color</h3>
                 <div class="color-grid" id="topMarkColors"></div>
@@ -345,23 +346,34 @@
                     </div>
                 </div>
             </div>
-
-            <div class="control-group">
-                <h3>Background for JPG Export</h3>
-                <div class="bg-color-grid" id="exportBackgroundColors"></div>
             </div>
-        </div>
 
         <div class="preview-area">
             <div class="logo-preview">
                 <svg id="logoSVG" width="1200" height="800" viewBox="0 0 1200 800">
-                    <g id="logoGroup"></g>
+                    <g id="mainContentGroup"></g> <g id="logoGroup"></g>
                     <g id="textGroup"></g>
                 </svg>
             </div>
 
+            <div class="control-group">
+                <h3>Background</h3> <div class="bg-color-grid" id="exportBackgroundColors"></div>
+            </div>
+
             <div class="download-section">
-                <div class="download-group">
+                <div class="control-group" style="text-align: center; margin-bottom: 25px;">
+                    <h3>Download Format</h3>
+                    <div style="display: inline-block; background: #eee; padding: 8px 15px; border-radius: 8px;">
+                        <label style="margin-right: 20px;">
+                            <input type="radio" name="downloadFormat" value="png" checked onchange="handleFormatChange()"> PNG
+                        </label>
+                        <label>
+                            <input type="radio" name="downloadFormat" value="jpg" onchange="handleFormatChange()"> JPG
+                        </label>
+                    </div>
+                </div>
+
+                <div id="pngDownloadGroup" class="download-group">
                     <h4>PNG Downloads (Transparent)</h4>
                     <div class="download-buttons">
                         <button class="download-btn" onclick="downloadPNG(200)">200px</button>
@@ -371,7 +383,7 @@
                     </div>
                 </div>
 
-                <div class="download-group">
+                <div id="jpgDownloadGroup" class="download-group" style="display: none;">
                     <h4>JPG Downloads (Colored Background)</h4>
                     <div class="download-buttons">
                         <button class="download-btn jpg" onclick="downloadJPG('square')">Square</button>
@@ -380,10 +392,9 @@
                     </div>
                 </div>
 
-                <p style="text-align: center; margin-top: 40px; font-size: 14px; color: #666;">
+                <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #666;">
                     Something broken or need help? Email <a href="mailto:jeff.w.stapleton@gmail.com">jeff.w.stapleton@gmail.com</a>
                 </p>
-
             </div>
         </div>
     </div>
@@ -392,16 +403,19 @@
     </div>
 
     <script>
-        // Your church brand colors
+        // Add a constant for the transparent background value
+        const TRANSPARENT_BG_VALUE = 'transparent_bg';
+        const SOLID_WHITE_VALUE = '#ffffff'; // This will be the actual white color
+
+        // Your church brand colors (NO CHANGE NEEDED HERE, as solid white is already there)
         const brandColors = [
             '#339c5e', // Ropes Green
             '#2d513f', // Shade Green
             '#414a56', // Navy
             '#e0d5ca', // Tan
-            '#ffffff', // White
+            '#ffffff', // White (This will now be a solid white background)
             '#ffa500', // Shock Yellow
-            '#222222',  // New Black
-            'transparent_bg' // Transparent Background
+            '#222222'  // New Black
         ];
 
         let currentConfig = {
@@ -411,7 +425,8 @@
             textOption: 'ropes',
             textColor: brandColors[6], // New Black
             layout: 'horizontal',
-            exportBackgroundColor: 'transparent_bg' // NEW: Default to transparent
+            exportBackgroundColor: TRANSPARENT_BG_VALUE, // Default to transparent
+            currentDownloadFormat: 'png' // NEW: Track the selected format
         };
 
         const logoMarks = {
@@ -611,18 +626,32 @@
             colorGroups.forEach(groupId => {
                 const container = document.getElementById(groupId);
                 container.innerHTML = ''; // Clear existing children
-                brandColors.forEach((color, index) => {
+
+                let colorsToDisplay = brandColors;
+
+                // Filter colors for exportBackgroundColors based on format
+                if (groupId === 'exportBackgroundColors') {
+                    if (currentConfig.currentDownloadFormat === 'png') {
+                        // PNG: All colors + transparent
+                        colorsToDisplay = [...brandColors, TRANSPARENT_BG_VALUE];
+                    } else { // JPG
+                        // JPG: All colors EXCEPT transparent
+                        colorsToDisplay = brandColors;
+                    }
+                }
+
+                colorsToDisplay.forEach((color, index) => {
                     const colorDiv = document.createElement('div');
                     colorDiv.className = groupId === 'exportBackgroundColors' ? 'bg-color-option' : 'color-option';
 
-                    // Special handling for the 'transparent_bg' option
-                    if (groupId === 'exportBackgroundColors' && color === 'transparent_bg') {
+                    // Special handling for the 'transparent_bg' option visual
+                    if (groupId === 'exportBackgroundColors' && color === TRANSPARENT_BG_VALUE) {
                         colorDiv.style.background = `
                             linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
                             linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
                             linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
                             linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)`;
-                        colorDiv.style.backgroundSize = '10px 10px'; // Smaller checkers for the option box
+                        colorDiv.style.backgroundSize = '10px 10px';
                     } else {
                         colorDiv.style.backgroundColor = color;
                     }
@@ -630,20 +659,28 @@
                     colorDiv.onclick = () => selectColor(groupId, color, colorDiv);
 
                     // Set default selections
-                    if (groupId === 'logoColors' && index === 2) { // Navy for bottom mark
+                    // Existing defaults remain:
+                    if (groupId === 'logoColors' && color === brandColors[2]) { // Navy for bottom mark
                         colorDiv.classList.add('selected');
-                    } else if (groupId === 'textColors' && index === 6) { // New Black for text
+                    } else if (groupId === 'textColors' && color === brandColors[6]) { // New Black for text
                         colorDiv.classList.add('selected');
-                    } else if (groupId === 'exportBackgroundColors' && color === 'transparent_bg') { // NEW: Select transparent by default
+                    } else if (groupId === 'topMarkColors' && color === brandColors[0]) { // Ropes Green for top mark
                         colorDiv.classList.add('selected');
-                    } else if (groupId === 'topMarkColors' && index === 0) { // Ropes Green for top mark
-                        colorDiv.classList.add('selected');
+                    }
+                    // NEW default for exportBackgroundColors based on format
+                    if (groupId === 'exportBackgroundColors') {
+                        if (currentConfig.currentDownloadFormat === 'png' && color === TRANSPARENT_BG_VALUE) {
+                            colorDiv.classList.add('selected');
+                        } else if (currentConfig.currentDownloadFormat === 'jpg' && color === SOLID_WHITE_VALUE) {
+                            colorDiv.classList.add('selected');
+                        }
                     }
 
                     container.appendChild(colorDiv);
                 });
             });
         }
+
 
         function selectColor(groupId, color, element) {
             // Remove selection from siblings
@@ -670,6 +707,40 @@
 
             updatePreview();
         }
+
+        // NEW FUNCTION: Handles changes to the PNG/JPG radio buttons
+        function handleFormatChange() {
+            const selectedFormat = document.querySelector('input[name="downloadFormat"]:checked').value;
+            currentConfig.currentDownloadFormat = selectedFormat;
+
+            // Show/hide relevant download buttons
+            document.getElementById('pngDownloadGroup').style.display = (selectedFormat === 'png') ? 'block' : 'none';
+            document.getElementById('jpgDownloadGroup').style.display = (selectedFormat === 'jpg') ? 'block' : 'none';
+
+            // Update default export background based on selected format
+            if (selectedFormat === 'png') {
+                currentConfig.exportBackgroundColor = TRANSPARENT_BG_VALUE;
+            } else { // jpg
+                currentConfig.exportBackgroundColor = SOLID_WHITE_VALUE;
+            }
+
+            // Re-initialize color pickers to reflect available options and select new default
+            initializeColorPickers();
+            // Update preview based on new background
+            updatePreview();
+        }
+
+        // Ensure initial state is set correctly on page load
+        // Call handleFormatChange on load to set initial state based on default radio button
+        document.addEventListener('DOMContentLoaded', () => {
+            // Call initializeColorPickers first to set up the default PNG background picker
+            initializeColorPickers();
+            // Then call handleFormatChange to apply initial visibility and background
+            handleFormatChange();
+            // Finally, update the preview
+            updatePreview();
+        });
+
 
         function updateUIForLogoMark(logoMark) {
             const topMarkGroup = document.getElementById('topMarkColorGroup');
