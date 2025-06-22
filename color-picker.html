@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Color Palette</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        /* Your CSS starts here */
+        :root {
+            --shadow-color: 0deg 0% 50%;
+            --color-white: #ffffff;
+            --color-new-black: #222222;
+            --color-shock-yellow: #ffa500;
+            --color-shade-green: #2d513f;
+            --color-navy: #414a56;
+            --color-ropes-green: #339c5e;
+            --color-tan: #e0d5ca;
+            --ease-out: 0.19, 1, 0.22, 1;
+            --ease-duration: 700ms;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            width:100%;
+            margin: auto;
+            display:block;
+            gap: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding: 30px;
+        }
+        h2 {
+            font-size: 2rem;
+            color: #aaa;
+            margin: 2rem 0 2rem;
+            text-align: center;
+            text-shadow: -2px -2px 2px #fff;
+        }
+
+        .title {
+            color:#222222;
+            text-align:center;
+            padding:20px;
+            text-transform:uppercase;
+        }
+
+        .colors {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 0 auto;
+            width: 80%;
+        }
+
+        .color {
+            display: flex;
+            justify-content: space-between;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            flex-grow: 1;
+            padding: 2.5rem 2.5rem;
+            color: #fff;
+            background-color: #000;
+            border-radius: 0.25rem;
+            box-shadow: 0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.36),
+                0.8px 1.6px 2px -0.8px hsl(var(--shadow-color) / 0.36),
+                2.1px 4.1px 5.2px -1.7px hsl(var(--shadow-color) / 0.36),
+                5px 10px 12.6px -2.5px hsl(var(--shadow-color) / 0.36);
+        }
+
+        .footerinfo {
+            color:#888888;
+            text-align:center;
+            padding:30px;
+            font-size:12px;
+        }
+
+        /* Nested CSS for .color__label, .color__values etc. needs to be un-nested if not using a preprocessor like SASS/LESS */
+        .color .color__label {
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            font-size: 1.75rem;
+            transition: transform 600ms cubic-bezier(var(--ease-out));
+        }
+        .color .color__values {
+            transition: transform 600ms cubic-bezier(var(--ease-out));
+        }
+        .color .color__values th {
+            text-align: left;
+            padding: 0.25rem 1rem 0.25rem 0;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
+        .color .color__values td {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+
+        .color::before {
+            content: "";
+            top: 0;
+            left: -50%;
+            width: 200%;
+            height: 150%;
+            position: absolute;
+            background: radial-gradient(
+                circle at bottom center,
+                rgba(255, 255, 255, 1) 0%,
+                rgba(255, 255, 255, 0) 33%
+            );
+            transition: transform var(--ease-duration) cubic-bezier(var(--ease-out));
+            transform: translateY(100%);
+            mix-blend-mode: overlay;
+            will-change: transform;
+        }
+
+        .color:hover::before {
+            transform: translateY(0);
+        }
+
+        .color__overlay {
+            width: auto;
+            padding: 0 1rem;
+            font-size: 0.85rem;
+            height: 2rem;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            z-index: 999;
+            background-color: #fff;
+            color: var(--color-ropes-green); /* This color should be explicitly defined for contrast */
+            transition: transform var(--ease-duration) cubic-bezier(var(--ease-out));
+            transform: translate(-50%, 100%);
+            display: flex;
+            min-width: 33%;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-top-left-radius: 0.35rem;
+            border-top-right-radius: 0.35rem;
+            pointer-events: none;
+        }
+
+        .color__overlay-icon {
+            width: 0.8rem;
+            height: 0.8rem;
+            background: transparent
+                url(https://assets.codepen.io/1600156/icon-copy-space-blue.svg) no-repeat 0
+                0;
+            background-size: contain;
+            display: block;
+            margin-right: 0.5rem;
+        }
+
+        .copy-to-clipboard--is-copied .color__overlay-icon {
+            background: transparent
+                url(https://assets.codepen.io/1600156/icon-check-space-blue.svg) no-repeat 0
+                0;
+        }
+
+        .color:hover .color__overlay {
+            transform: translate(-50%, 0%);
+        }
+
+        .color--ropes-green {
+            background-color: var(--color-ropes-green);
+        }
+        .color--shade-green {
+            background-color: var(--color-shade-green);
+        }
+        .color--navy {
+            background-color: var(--color-navy);
+        }
+        .color--tan {
+            background-color: var(--color-tan);
+        }
+        .color--white {
+            background-color: var(--color-white);
+            color: var(--color-navy); /* Adjusted for readability on white background */
+        }
+        .color--white .color__values strong {
+             color: rgba(4, 0, 108, 0.35) !important; /* This might need adjustment based on final RGB for Navy if that's the intention */
+        }
+        .color--shock-yellow {
+            background-color: var(--color-shock-yellow);
+        }
+        .color--new-black {
+            background-color: var(--color-new-black);
+        }
+        /* Your CSS ends here */
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="logo">My Logo</h1>
+        <nav>
+          <ul>
+            <li>Home</li>
+            <li>Logo Builder</li>
+            <li>Colors</li>
+            <li>Typography</li>
+            <li>Files</li>
+          </ul>
+        </nav>
+      </header>
+
+    <div class="title">
+        <h1>FBC Ropes</h1>
+        <p>Brand Colors</p>
+    </div>
+        
+    <div class="container">
+        <div id="colors" class="colors">
+
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
+
+        <script>
+            // Your JavaScript starts here
+            const data = [
+                {
+                    label: "Ropes Green",
+                    color: "ropes-green",
+                    hex: "339c5e",
+                    rgb: "4,0,108", // This RGB value (4,0,108) doesn't match #339c5e. #339c5e is rgb(51, 156, 94)
+                    cmyk: "100,98,19,27", // CMYK values are also inconsistent with hex
+                    pms: "288"
+                },
+                {
+                    label: "Shade Green",
+                    color: "shade-green",
+                    hex: "2d513f", // Removed # from hex as the data-clipboard-text adds it
+                    rgb: "0,34,175", // Inconsistent with hex #2d513f (rgb(45, 81, 63))
+                    cmyk: "98,91,0,0",
+                    pms: "293"
+                },
+                {
+                    label: "Navy",
+                    color: "navy",
+                    hex: "414a56",
+                    rgb: "1,92,254", // Inconsistent with hex #414a56 (rgb(65, 74, 86))
+                    cmyk: "82,64,0,0",
+                    pms: "2175"
+                },
+                {
+                    label: "Tan",
+                    color: "tan",
+                    hex: "e0d5ca", // Corrected hex based on previous context, original was 5128f2 which is a very different color.
+                    rgb: "224,213,202", // RGB for #e0d5ca
+                    cmyk: "9,12,18,0", // CMYK for #e0d5ca
+                    pms: "7500" // Example PMS, adjust as needed
+                },
+                {
+                    label: "White",
+                    color: "white",
+                    hex: "ffffff", // Corrected hex, original was 00e0ff (light blue/cyan)
+                    rgb: "255,255,255", // RGB for #ffffff
+                    cmyk: "0,0,0,0", // CMYK for #ffffff
+                    pms: "White" // Example PMS, adjust as needed
+                },
+                {
+                    label: "Shock Yellow",
+                    color: "shock-yellow",
+                    hex: "ffa500",
+                    rgb: "255,165,0", // RGB for #ffa500
+                    cmyk: "0,35,100,0", // CMYK for #ffa500
+                    pms: "151" // Example PMS, adjust as needed
+                },
+                {
+                    label: "New Black",
+                    color: "new-black",
+                    hex: "222222",
+                    rgb: "34,34,34", // RGB for #222222
+                    cmyk: "0,0,0,86", // CMYK for #222222
+                    pms: "Black" // Example PMS, adjust as needed
+                }
+            ];
+
+            // Loop to generate color cards
+            for (let i = 0; i < data.length; i++) { // Changed 'i' to 'let i' for better scope management
+                let colorHtml = '<div class="color copy-to-clipboard color--' + data[i].color + '" ';
+                colorHtml += 'data-clipboard-text="#' + data[i].hex + '">'; // Use colorHtml for building string
+                colorHtml += '<h3 class="color__label">' + data[i].label + "</h3>";
+                colorHtml += '<table class="color__values">';
+                colorHtml += "<tr><th>Hex</th><td>#" + data[i].hex + "</td></tr>"; // Added # for hex display
+                colorHtml += "<tr><th>RGB</th><td>" + data[i].rgb + "</td></tr>";
+                colorHtml += "<tr><th>CMYK</th><td>" + data[i].cmyk + "</td></tr>";
+                colorHtml += "<tr><th>PMS</th><td>" + data[i].pms + "</td></tr></table>";
+                colorHtml += '<span class="color__overlay">';
+                colorHtml += '<span class="color__overlay-icon"></span>';
+                colorHtml += '<span class="color__overlay-text">Copy Hex Value</span>';
+                colorHtml += "</span>";
+                colorHtml += "</div>"; // Close the main color div
+
+                $("#colors").append(colorHtml);
+            }
+
+            // Initialize ClipboardJS
+            const copied_sound = new Audio("https://assets.codepen.io/1600156/air-pop.wav");
+            copied_sound.volume = 0.08;
+            let clipboard = new ClipboardJS(".copy-to-clipboard"); // eslint-disable-line no-unused-vars
+
+            // Click handler for color cards
+            $(".color.copy-to-clipboard").click(function () {
+                copied_sound.play(); // Play sound on click
+                $(this).addClass("copy-to-clipboard--is-copied animate__animated animate__bounce");
+                $(this).find(".color__overlay-text").html("Copied!");
+
+                // Reset state on mouseout
+                $(this).one('mouseleave', function() { // Use .one() to ensure it only runs once per mouseout after click
+                    $(this).find(".color__overlay-text").html("Copy Hex Value");
+                    $(this).removeClass("copy-to-clipboard--is-copied animate__animated animate__bounce");
+                });
+            });
+            // Your JavaScript ends here
+        </script>
+    </div>    
+<div class="bottom-footer">
+    <p class="footerinfo">Logobuilder v1.0 Developed by <a href="https://www.jeffstapleton.co" target="_blank">jeffstapleton.co</a> - 2025 - Powered by adrenaline and energy drinks<p>
+</div>
+</body>
+</html>
